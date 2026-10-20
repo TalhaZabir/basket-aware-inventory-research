@@ -8,9 +8,9 @@
   "original_rows": 2595732,
   "original_products": 92339,
   "nonpositive_quantity_rows_removed": 14466,
-  "retained_rows": 544550,
-  "retained_products": 300,
-  "retained_baskets": 181761,
+  "retained_rows": 886241,
+  "retained_products": 1000,
+  "retained_baskets": 212095,
   "week_range": [
     1,
     102
@@ -29,7 +29,7 @@
       102
     ]
   },
-  "universe_rule": "top 300 products by training active-week support, then training units",
+  "universe_rule": "top 1000 products by training active-week support, then training units",
   "synthetic_assumptions": {
     "lead_time_weeks": 1,
     "holding_cost_per_unit_week": 1.0,
@@ -38,5 +38,10 @@
     "unit_purchase_cost": 1.0,
     "service_target": 0.9,
     "alpha": 1.5
+  },
+  "external_gate3": {
+    "top_n": 1000,
+    "stock_factor": 0.01,
+    "protocol": "same chronological split, alpha, graph construction, lead-time, cost, and PA1/C4 replay logic; external stock factor is an explicit stress condition"
   }
 }

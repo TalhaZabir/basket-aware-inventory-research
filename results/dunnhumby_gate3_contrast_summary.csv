@@ -1,0 +1,6 @@
+contrast,metric,replications,mean_difference,ci95_low,ci95_high,bootstrap_resamples,bootstrap_p025,bootstrap_p975,deterministic_note
+PA1_minus_C4,total_cost,120,274187478.0,274187478.0,274187478.0,1000,274187478.0,274187478.0,120 repeated deterministic paths; bootstrap is degenerate
+PA1_minus_C4,average_inventory_units,120,-8.0,-8.0,-8.0,1000,-8.0,-8.0,120 repeated deterministic paths; bootstrap is degenerate
+PA1_minus_C4,item_fill_rate,120,-0.9156878932138498,-0.9156878932138499,-0.9156878932138497,1000,-0.9156878932138498,-0.9156878932138498,120 repeated deterministic paths; bootstrap is degenerate
+PA1_minus_C4,complete_basket_fill_rate,120,0.0,0.0,0.0,1000,0.0,0.0,120 repeated deterministic paths; bootstrap is degenerate
+PA1_minus_C4,unmet_units,120,30465286.0,30465286.0,30465286.0,1000,30465286.0,30465286.0,120 repeated deterministic paths; bootstrap is degenerate

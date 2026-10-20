@@ -1,0 +1,3 @@
+policy,alpha,test_weeks,total_cost,average_inventory_units,item_fill_rate,complete_basket_fill_rate,unmet_units,stockout_events,basket_count,top_n,stock_factor
+C4_popularity,1.5,12,833395727.0,66870487.166666664,1.0,1.0,0.0,0,26528,1000,0.25
+PA_graph,1.5,12,936543398.0,66870470.166666664,0.6555231917685826,1.0,11460875.0,14,26528,1000,0.25

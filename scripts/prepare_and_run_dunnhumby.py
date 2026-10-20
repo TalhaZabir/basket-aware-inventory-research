@@ -24,7 +24,7 @@ TRAIN_END, VALIDATION_END, TEST_END = 78, 90, 102
 ALPHA = 1.5
 
 
-def prepare() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, object]]:
+def prepare(top_n: int = TOP_N) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, object]]:
     OUT.mkdir(parents=True, exist_ok=True)
     frame = pd.read_csv(RAW, usecols=["household_key", "BASKET_ID", "DAY", "PRODUCT_ID", "QUANTITY", "SALES_VALUE", "STORE_ID", "WEEK_NO"])
     original_rows = len(frame)
@@ -33,7 +33,7 @@ def prepare() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, objec
     frame = frame.loc[(frame["QUANTITY"] > 0) & (frame["WEEK_NO"].between(1, TEST_END))].copy()
     support = frame.loc[frame["WEEK_NO"] <= TRAIN_END].groupby("PRODUCT_ID")["WEEK_NO"].nunique()
     volume = frame.loc[frame["WEEK_NO"] <= TRAIN_END].groupby("PRODUCT_ID")["QUANTITY"].sum()
-    selected = support.to_frame("train_active_weeks").join(volume.rename("train_units"), how="left").sort_values(["train_active_weeks", "train_units"], ascending=False).head(TOP_N).index
+    selected = support.to_frame("train_active_weeks").join(volume.rename("train_units"), how="left").sort_values(["train_active_weeks", "train_units"], ascending=False).head(top_n).index
     frame = frame.loc[frame["PRODUCT_ID"].isin(selected)].copy()
     frame["week_no"] = frame["WEEK_NO"].astype(int)
     frame["product_id"] = frame["PRODUCT_ID"].astype(str)
@@ -64,14 +64,14 @@ def prepare() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, objec
         "retained_baskets": int(frame["BASKET_ID"].nunique()),
         "week_range": [1, TEST_END],
         "chronological_split": {"train": [1, TRAIN_END], "validation": [TRAIN_END + 1, VALIDATION_END], "test": [VALIDATION_END + 1, TEST_END]},
-        "universe_rule": f"top {TOP_N} products by training active-week support, then training units",
+        "universe_rule": f"top {top_n} products by training active-week support, then training units",
         "synthetic_assumptions": {"lead_time_weeks": 1, "holding_cost_per_unit_week": 1.0, "shortage_penalty_per_unit": 9.0, "ordering_cost": 1.0, "unit_purchase_cost": 1.0, "service_target": 0.90, "alpha": ALPHA},
     }
     (OUT / "dunnhumby_source_profile.json").write_text(json.dumps(profile, indent=2), encoding="utf-8")
     return frame, baskets, panel, profile
 
 
-def replay(frame: pd.DataFrame, baskets: pd.DataFrame, panel: pd.DataFrame, graph: bool) -> dict[str, float]:
+def replay(frame: pd.DataFrame, baskets: pd.DataFrame, panel: pd.DataFrame, graph: bool, stock_factor: float = 1.0) -> dict[str, float]:
     products = sorted(frame["product_id"].unique())
     idx = {p: i for i, p in enumerate(products)}
     demand = panel.pivot_table(index="product_id", columns="week_no", values="units_sold", aggfunc="sum").reindex(index=products, columns=range(1, TEST_END + 1)).fillna(0.0).to_numpy()
@@ -101,7 +101,7 @@ def replay(frame: pd.DataFrame, baskets: pd.DataFrame, panel: pd.DataFrame, grap
         x = np.maximum(x, 0.0); return x * (np.sum(popularity) / max(np.sum(x), 1.0))
     popularity_buffer = scaled(popularity)
     graph_buffer = scaled(edge_buffer)
-    target = base + ALPHA * (graph_buffer if graph else popularity_buffer)
+    target = stock_factor * (base + ALPHA * (graph_buffer if graph else popularity_buffer))
     onhand = np.ceil(target).astype(float)
     total_cost = total_unmet = total_demand = total_fulfilled = total_inventory = 0.0
     baskets_total = baskets_complete = stockouts = 0
@@ -129,17 +129,27 @@ def replay(frame: pd.DataFrame, baskets: pd.DataFrame, panel: pd.DataFrame, grap
 
 
 def main() -> None:
-    frame, baskets, panel, profile = prepare()
-    rows = [replay(frame, baskets, panel, graph=False), replay(frame, baskets, panel, graph=True)]
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--top-n", type=int, default=TOP_N)
+    parser.add_argument("--stock-factor", type=float, default=1.0)
+    parser.add_argument("--output-prefix", default="dunnhumby_external_validation")
+    args = parser.parse_args()
+    frame, baskets, panel, profile = prepare(args.top_n)
+    profile["external_gate3"] = {"top_n": args.top_n, "stock_factor": args.stock_factor, "protocol": "same chronological split, alpha, graph construction, lead-time, cost, and PA1/C4 replay logic; external stock factor is an explicit stress condition"}
+    (OUT / "dunnhumby_source_profile.json").write_text(json.dumps(profile, indent=2), encoding="utf-8")
+    rows = [replay(frame, baskets, panel, graph=False, stock_factor=args.stock_factor), replay(frame, baskets, panel, graph=True, stock_factor=args.stock_factor)]
+    for row in rows:
+        row.update({"top_n": args.top_n, "stock_factor": args.stock_factor})
     result = pd.DataFrame(rows)
-    result.to_csv(RESULTS / "dunnhumby_external_validation_summary.csv", index=False)
+    result.to_csv(RESULTS / f"{args.output_prefix}_summary.csv", index=False)
     table = "| " + " | ".join(result.columns) + " |\n| " + " | ".join(["---"] * len(result.columns)) + " |\n"
     table += "\n".join("| " + " | ".join(str(row[col]) for col in result.columns) + " |" for _, row in result.iterrows())
     (RESULTS / "dunnhumby_external_validation_report.md").write_text(
         "# dunnhumby external validation\n\n"
         "This is a separate validation dataset and was not merged with UCI. The graph and popularity buffers are built from weeks 1–78 only; weeks 91–102 are replayed. Inventory, one-week lead time, costs, and alpha are synthetic assumptions.\n\n"
         + table + "\n\n"
-        + f"Retained {profile['retained_products']} products, {profile['retained_baskets']} baskets, and {profile['retained_rows']} transaction lines after restricting to the top-{TOP_N} training-support universe.\n",
+        + f"Retained {profile['retained_products']} products, {profile['retained_baskets']} baskets, and {profile['retained_rows']} transaction lines after restricting to the top-{args.top_n} training-support universe. Stock factor={args.stock_factor}.\n",
         encoding="utf-8",
     )
     print(result.to_string(index=False))
