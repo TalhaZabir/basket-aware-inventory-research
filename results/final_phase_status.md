@@ -34,4 +34,4 @@ Completed. Sections 1–10 were rebuilt around the Phase 3 primary evidence, wit
 
 ## Phase 8 Quality gates
 
-Core package validation and accessibility checks pass. Full visual rendering remains environment-limited by the absence of LibreOffice. A public project repository is not created because no destination or authenticated remote is configured; the local package is release-ready and documents its public data-source links. The final decision branch is: conditional simulated service benefit, but no established graph-specific economic advantage.
+Core package validation and accessibility checks pass. Full visual rendering remains environment-limited by the absence of LibreOffice. The public project repository is live at https://github.com/TalhaZabir/basket-aware-inventory-research. The final decision branch is: conditional simulated service benefit, but no established graph-specific economic advantage.
