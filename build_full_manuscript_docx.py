@@ -37,7 +37,7 @@ def build() -> None:
     add_page_number(footer)
 
     title = doc.add_paragraph(style="Title")
-    title.add_run("Basket Aware Inventory Research")
+    title.add_run("Does Basket Structure Add Value Beyond Popularity in Multi Item Replenishment")
     subtitle = doc.add_paragraph(style="Subtitle")
     subtitle.add_run("Full Manuscript Sections 1 to 10")
     intro = doc.add_paragraph()
@@ -54,7 +54,7 @@ def build() -> None:
     parse_markdown(doc, EARLY_SOURCE.read_text(encoding="utf-8"))
     parse_markdown(doc, LATER_SOURCE.read_text(encoding="utf-8"))
 
-    doc.core_properties.title = "Basket Aware Inventory Research Full Manuscript Sections 1 to 10"
+    doc.core_properties.title = "Does Basket Structure Add Value Beyond Popularity in Multi Item Replenishment"
     doc.core_properties.subject = "Complete evidence-bounded manuscript for basket-aware inventory research"
     doc.core_properties.author = "Research Project"
     doc.core_properties.comments = "Prepared from the project research data package and literature review."

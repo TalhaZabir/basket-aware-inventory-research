@@ -226,6 +226,24 @@ def parse_markdown(doc: Document, text: str) -> None:
                 "Training-only co-purchase graph degree and edge-weight summary",
                 "Co-purchase graph summary",
             ),
+            "[[FOREST_FIGURE]]": (
+                "forest_plot.png",
+                "Figure 5. Forest plot of PA1 minus C4 and PA1 minus C1 item-fill differences across all twelve synthetic scenarios; whiskers are 95% replication intervals.",
+                "Scenario forest plot for matched item-fill differences",
+                "Scenario-level matched contrasts",
+            ),
+            "[[STRATA_FIGURE]]": (
+                "mechanism_strata.png",
+                "Figure 6. PA1 minus C4 item-fill differences in low-popularity/high-lift and high-popularity/high-lift product strata; whiskers are 95% replication intervals.",
+                "Graph signal by popularity and lift stratum",
+                "Graph signal by popularity stratum",
+            ),
+            "[[REPLICATION_FIGURE]]": (
+                "dataset_replication.png",
+                "Figure 7. PA1 minus C4 item-fill differences in UCI Online Retail II and the tightened dunnhumby Complete Journey replay; the external replay is a stress check, not a causal validation.",
+                "Replication of the item-fill contrast across basket datasets",
+                "Replication across basket datasets",
+            ),
         }
         if line in figure_specs:
             filename, caption_text, alt_text, title_text = figure_specs[line]

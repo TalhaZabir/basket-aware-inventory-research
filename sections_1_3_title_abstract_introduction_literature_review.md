@@ -2,15 +2,13 @@
 
 ## Study title
 
-Basket-Aware Inventory Control under Demand and Lead-Time Uncertainty
+Does Basket Structure Add Value Beyond Popularity in Multi Item Replenishment
 
 ## Abstract
 
-Retailers replenish products separately even though customers purchase multiple products together and deliveries are uncertain. This study tests whether basket-aware buffering adds service value beyond independent replenishment at tightly matched simulated inventory, and whether any gain remains after popularity and graph-placebo controls.
+Retailers replenish products separately even though customers purchase multiple products together and deliveries are uncertain. This study asks whether a transaction-derived basket buffer adds value beyond product popularity when average inventory is tightly matched.
 
-The primary analysis uses UCI Online Retail II to reconstruct completed invoice baskets, weekly demand, and a training-only co-purchase graph. Three transparent moving-average/seasonal-naive forecasts are selected chronologically per product. A partner-protection policy is compared with an inventory-matched independent control, a popularity-only control, and rewired, shuffled, and stale-graph placebos. The frozen primary replay uses interior alpha = 1.5, a 1% inventory-matching band, 120 stochastic replications, and 1,000 paired bootstrap resamples in the moderate-variance S05 scenario. Three rolling windows and a separate dunnhumby Complete Journey basket dataset provide robustness checks.
-
-In S05, PA1 versus the matched independent control increased item fill by 0.0270 (95% replication interval 0.0263–0.0276) and complete-basket fill by 0.0944 (0.0803–0.1119), at an average inventory difference of 10,343 units and a cost increase of 231,712. Against popularity-only C4, PA1 was worse: item fill −0.0261 and basket fill −0.0667, with cost +168,736; the 1,000-resample intervals excluded zero for all three contrasts. PA1 also exceeded C2, C3, and C5 on both service measures, but those placebo comparisons do not establish that the original edge topology caused the difference. These results support a conditional service trade-off, not a graph-specific advantage. Inventory, supplier, stockout, and historical cost fields are absent, so policy outcomes remain simulated.
+Using UCI Online Retail II, the study reconstructs completed baskets, forecasts weekly demand with three transparent moving-average or seasonal-naive candidates, and builds a training-only co-purchase graph. PA1, the partner-protection policy, is compared with C1, an inventory-matched independent policy, and C4, a popularity-only policy, across twelve synthetic lead-time and cost scenarios with 120 paired replications. The primary result is negative for the graph-on-top-of-popularity contrast: PA1 minus C4 item fill is −0.0258 (95% scenario-clustered CI −0.0268 to −0.0248), with +6,092 average inventory units and +194,213 simulated cost units. PA1 minus C1 is positive for item fill (+0.0268, CI +0.0260 to +0.0276) but also more costly (+201,341 units). A low-popularity/high-lift stratum is a conditional exception (+0.1014 item fill), whereas a high-popularity/high-lift stratum is negative (−0.0750). The direction of the item-fill contrast replicates in a tightened dunnhumby replay, but complete-basket fill does not discriminate. Because inventory and supplier records are absent, these are controlled simulation findings, not historical or causal estimates.
 
 **Keywords:** basket-aware inventory control; market-basket analysis; complete-basket fulfilment; lead-time uncertainty; inventory simulation; co-purchase graph; retail forecasting
 
@@ -42,7 +40,13 @@ The first question is addressed by the completed data audit. The second is addre
 
 ## 2.6 Contribution and scope
 
-The contribution is an empirical integration and boundary-condition analysis. It connects transaction-derived basket structure with demand forecasting and stochastic lead-time inventory simulation, preserves chronological leakage control, separates forecast metrics from inventory outcomes, and compares four policies under common inputs. The study position is deliberately empirical: it evaluates when the added basket-aware buffer changes simulated service, inventory, and cost, and reports the controls and uncertainty needed to interpret those changes. The operational evidence boundary and remaining data requirements are consolidated in Section 8.
+The contribution is an empirical integration and boundary-condition analysis. It connects transaction-derived basket structure with demand forecasting and stochastic lead-time inventory simulation, preserves chronological leakage control, separates forecast metrics from inventory outcomes, and compares graph, popularity, independent, and placebo controls under common inputs. The paper makes three numbered contributions:
+
+1. It establishes a matched-inventory primary comparison rather than attributing gains to an unpriced extra buffer.
+2. It shows that popularity dominates the tested graph buffer overall, while a low-popularity/high-lift stratum provides a conditional service regime where pair information can matter.
+3. It supplies reproducible public-data code, scenario definitions, placebo controls, uncertainty estimates, and an external basket-data check.
+
+The operational evidence boundary and remaining data requirements are consolidated in Section 8.
 
 # 3. Targeted literature review
 

@@ -81,7 +81,7 @@ All policies use weekly periodic review. At review week t, inventory position is
 
 ### Edge-level basket-aware policies
 
-PA1 is the partner-protection policy actually used in the primary replay. For each product (i), training-only directed edges identify at most five supported partners (j). The incremental item buffer is a weighted sum of partner risk, using conditional co-purchase probability, pair count, and partner residual scale (1.645 sigma_j). The buffer is computed once from the training graph, scaled to a common total mass across graph and control variants, and applied across the full weekly review horizon as S^{PA1}_{i,t}=S^{ind}_{i,t}+alpha b_i. Validation used the alpha grid [0.10, 0.25, 0.50, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0]. Alpha = 1.5 was selected because it was an interior value meeting the frozen service-gain rule and had the lowest matched-cost result among eligible interior values. The primary replay uses alpha = 1.5, not the earlier boundary value 3.0.
+PA1 is the partner-protection policy actually used in the primary replay. For each product (i), training-only directed edges identify at most five supported partners (j). The incremental item buffer is a weighted sum of partner risk, using conditional co-purchase probability, pair count, and partner residual scale (1.645 sigma_j). The buffer is computed once from the training graph, scaled to a common total mass across graph and control variants, and applied across the full weekly review horizon as S_PA1(i,t) = S_ind(i,t) + alpha times b_i. Validation used the alpha grid [0.10, 0.25, 0.50, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0]. Alpha = 1.5 was selected because it was an interior value meeting the frozen service-gain rule and had the lowest matched-cost result among eligible interior values. The primary replay uses alpha = 1.5, not the earlier boundary value 3.0.
 
 PA2 allocates the same total buffer mass using a greedy basket-coverage score estimated from training baskets. Its objective rewards buffers that cover many distinct basket requirements; it is budget constrained so a service gain cannot be explained by an unconstrained increase in total buffer mass.
 
@@ -196,9 +196,13 @@ For transparency, the frozen selected forecast was also evaluated descriptively 
 
 These test metrics are honest held-out diagnostics, not tuning statistics. The negative selected bias is consistent with under-forecasting during the September–December peak test window and helps explain why realised item fill is below the nominal target. The small M5 sample check is reported in Appendix F rather than treated as a full benchmark.
 
-## 5.4 Primary policy levels and paired contrasts
+## 5.4 Primary all-scenario analysis
 
-The primary replay covers all twelve synthetic scenarios, with 120 paired replications per scenario and the same 1% inventory-matching rule. The earlier S05 table is retained as a diagnostic in the package, but it is not the headline estimand. Because the scenarios use different h and p values, the headline result is a scenario-clustered mean of within-scenario differences, not a pooled cost level. Replication-level intervals below are normal 95% confidence intervals for the paired mean difference; deterministic scenarios have degenerate intervals.
+The primary replay covers all twelve synthetic scenarios, with 120 paired replications per scenario and the same 1% inventory-matching rule. Because the scenarios use different h and p values, the headline result is a scenario-clustered mean of within-scenario differences, not a pooled cost level. Replication-level intervals below are normal 95% confidence intervals for the paired mean difference; deterministic scenarios have degenerate intervals.
+
+### Legacy S05 level diagnostic
+
+The following S05 level table is retained for auditability only; it is not the primary estimand. The all-scenario paired contrasts below are the main result, while the earlier four-policy comparisons are retained in Appendix E.
 
 | Policy | Cost | Average inventory | Item fill | Basket fill | Unmet units | Stockout frequency |
 |---|---:|---:|---:|---:|---:|---:|
@@ -220,14 +224,6 @@ The primary paired contrasts are PA1−C4, the graph-on-top-of-popularity test, 
 
 The direction is unchanged in every scenario: PA1−C1 is positive for item and basket fill in S01–S12, whereas PA1−C4 is negative for both. Cost differences are positive in every scenario for both contrasts. The per-scenario table, matching-quality table, and forest-plot-ready values are `results/phase3_scenario_contrast_summary.csv` and `results/phase3_matching_quality.csv`. Maximum accepted inventory gaps were 0.80% for PA1−C1 and 0.99% for C4−C1; no comparison violated the 1% band.
 
-| Contrast | Cost difference | Inventory difference | Item-fill difference | Basket-fill difference |
-|---|---:|---:|---:|---:|
-| PA1 − C1 | +231,712 [227,660, 236,225] | +10,343 [10,321, 10,380] | +0.0270 [0.0263, 0.0276] | +0.0944 [0.0803, 0.1119] |
-| PA1 − C4 | +168,736 [161,770, 175,981] | +6,268 [5,514, 7,314] | −0.0261 [−0.0272, −0.0248] | −0.0667 [−0.0849, −0.0493] |
-| PA1 − C2 | −81,252 [−85,980, −76,182] | −2,663 [−3,876, −1,074] | +0.0121 [+0.0115, +0.0127] | +0.0235 [+0.0138, +0.0342] |
-| PA1 − C3 | −69,665 [−74,949, −64,060] | −2,122 [−3,824, −246] | +0.0105 [+0.0099, +0.0112] | +0.0352 [+0.0260, +0.0441] |
-| PA1 − C5 | −147,460 [−151,484, −143,045] | −4,914 [−6,483, −3,509] | +0.0222 [+0.0216, +0.0227] | +0.0410 [+0.0339, +0.0486] |
-
 The 1,000-resample week-and-replication bootstrap is a direction check rather than a replacement for the paired mean CI. Its pooled percentile interval for PA1−C4 is negative for item fill (approximately −0.033 to −0.018) and basket fill (approximately −0.082 to −0.046); the corresponding PA1−C1 intervals are positive (approximately 0.020 to 0.034 for item fill and 0.072 to 0.207 for basket fill). The bootstrap cost interval is broad because it resamples scenarios with different synthetic cost scales, so cost inference uses the scenario-clustered mean CI. Thus the all-scenario evidence does not support a graph-on-top-of-popularity gain in this replay. The common-target placebo results remain allocation checks, not topology-identification tests.
 
 Six-fold calibration was chosen on the validation window, before test evaluation, by selecting the candidate multiplier closest to the critical-fractile item-fill target. Across the 24 scenario-policy validation rows, six-fold had mean item fill 0.9487 against mean target 0.9725, versus 0.9152 at three-fold and 0.9625 at nine-fold; the six-fold candidate was the lowest-cost eligible interior calibration satisfying the pre-registered three-percentage-point acceptance rule. In the held-out test, however, the matched C1 target was approximately 0.993 on average while realised C1 item fill was approximately 0.83–0.84, reflecting peak-period under-forecasting and showing that validation calibration is optimistic for the test window. The three-/six-/nine-fold table is `results/phase3_calibration_robustness.csv`.
@@ -235,6 +231,10 @@ Six-fold calibration was chosen on the validation window, before test evaluation
 [[FRONTIER_FIGURE]]
 
 [[COST_PENALTY_FIGURE]]
+
+[[FOREST_FIGURE]]
+
+The forest plot is the primary scenario-level display: every scenario has the same direction for PA1 minus C4 and PA1 minus C1 item fill, with no cherry-picked scenario driving the pooled estimate. The S05-only legacy contrasts and the earlier four-policy tables are retained in Appendix E.
 
 ## 5.5 Rolling windows, sensitivity, external data, and mechanism
 
@@ -266,6 +266,12 @@ The external contrast was recorded with 120 paired deterministic paths and 1,000
 
 The mechanism is simple. A basket buffer can help only if it reallocates stock toward products whose joint availability affects the complete-order metric, while the resulting inventory, purchase, ordering, and shortage costs remain acceptable. A popularity buffer can achieve the same outcome when high-volume products also dominate basket completion. The PA1−C4 result shows that co-purchase edges did not add value on top of popularity in the primary replay; the placebo contrasts show that buffer allocation, not necessarily graph topology, drives the observed differences.
 
+[[STRATA_FIGURE]]
+
+[[REPLICATION_FIGURE]]
+
+Figure 6 shows the conditional mechanism result: PA1 improves item fill in the low-popularity/high-lift stratum but loses in the high-popularity/high-lift stratum. Figure 7 shows that the negative item-fill direction replicates in the tightened dunnhumby replay, while the complete-basket proxy remains non-discriminating.
+
 All scenario-level rows, matched comparisons, configuration hashes, figures, rolling-window outputs, external source profile, and phase reports are retained in `research_data_package/results/`.
 
 # 6. Discussion
@@ -280,7 +286,7 @@ The study connects basket analysis, intermittent transaction demand, multi-item 
 
 ## 6.3 Interpretation for research design
 
-The most important design result is methodological: a tightly matched independent control, a popularity-only control, graph-topology placebos, replication-level intervals, and rolling windows are needed before a basket graph can be credited with value. Completed transactions support a basket-service proxy, but they cannot identify stockout substitution or causal complementarity.
+The design implication is compact: a basket graph should be credited only after comparison with a tightly matched independent control, a popularity-only control, graph-topology placebos, replication-level intervals, and rolling windows. Completed transactions support a basket-service proxy, but cannot identify stockout substitution or causal complementarity.
 
 # 7. Implications
 
@@ -298,7 +304,7 @@ Researchers should separate forecast improvement from policy improvement and sho
 
 UCI Online Retail II records completed transaction lines, not attempted demand, on-hand balances, purchase orders, supplier dates, receipts, stockouts, lost sales, backorders, or observed costs. Complete-basket fulfilment is therefore a replay proxy; it cannot recover abandoned orders, substitutions, or historical stockout rates. Inventory, lead-time, cost, and service outcomes are simulated or normalized throughout the package.
 
-The primary robustness upgrades are complete: alpha = 1.5 is interior, matching is within 1%, all twelve scenarios use 120 paired replications, bootstrap uncertainty uses 1,000 resamples, and three rolling windows are reported. The corrected dunnhumby stress replay is separate from UCI and discriminates on item fill but not on the complete-basket proxy; it does not convert the study into a causal or operational validation. The Scopus and Web of Science searches were specified but not run because licensed exports were unavailable, and the reference list is an open-record cross-check rather than a completed database-verified systematic review. The code is publicly archived at GitHub, but no DOI has yet been minted for the repository.
+The robustness upgrades are complete for the released simulation: alpha = 1.5 is interior, matching is within 1%, all twelve scenarios use 120 paired replications, bootstrap uncertainty uses 1,000 resamples, and three rolling windows are reported. The tightened dunnhumby stress replay discriminates on item fill but not on the complete-basket proxy; it is not causal or operational validation. Scopus and Web of Science were specified but not run because licensed exports were unavailable; the reference list is an open-record cross-check, not a database-verified systematic review. The code is public, but the repository has no DOI.
 
 Future research needs observed inventory and supplier events, attempted orders and substitutions, calibrated probabilistic forecasts with CRPS or quantile loss, richer joint-replenishment and forecast-then-optimise baselines, and operational constraints such as case packs, capacity, perishability, and supplier reliability. The public repository archives the released configuration and source-download manifests; a DOI remains future work.
 
