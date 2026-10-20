@@ -14,7 +14,7 @@ Completed. PA1, PA2, and PA3 were frozen with C1–C5 controls. The single guard
 
 ## Phase 3 Uncertainty and robustness
 
-Completed for the primary analysis. The final S05 replay uses interior alpha=1.5, a 1% matching band, 120 paired stochastic replications, 1,000 bootstrap resamples, and three rolling-origin windows. The primary PA1−C4 intervals reject a graph-on-top-of-popularity benefit; placebo contrasts are reported separately.
+Completed for the primary analysis. The final replay covers all twelve scenarios with interior alpha=1.5, a 1% matching band, 120 paired replications per scenario, 1,000 bootstrap resamples, and three rolling-origin windows. The scenario-clustered PA1−C4 intervals reject a graph-on-top-of-popularity benefit; PA1−C1 is positive in every scenario. Placebo contrasts are reported separately.
 
 ## Phase 4 External validity
 

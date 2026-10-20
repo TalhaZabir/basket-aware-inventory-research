@@ -1,11 +1,11 @@
 # Phase 3 execution audit
 
-The final primary replay is frozen in `phase3_test_config.json` with configuration hash `983c3e4505db8a6efe8fbf2538b2332abad1bb80b35c1c87d0ab8f2741d44097` and parent alpha-validation hash `ac87a2e332c1c82cff38e93a053770ebe97b744c7af8931e9f3269582ef05866`.
+The final primary replay is frozen in `phase3_test_config.json` with configuration hash `70cc7bc98246449e106eb25e81456a03d6364806cdd68953bd9f72523d26d065` and parent alpha-validation hash `ac87a2e332c1c82cff38e93a053770ebe97b744c7af8931e9f3269582ef05866`.
 
-- Primary scenario: S05, low-variance stochastic lead time, h=0.15, p=5.0.
+- Scenario scope: S01–S12; S05 remains the diagnostic low-variance stochastic case.
 - Alpha: 1.5, selected as an interior validation value.
 - Matching band: maximum accepted relative average-inventory gap 0.79%, below 1% for PA1 and C4.
-- Replications: 120 paired stochastic replications.
+- Replications: 120 paired replications in every scenario.
 - Bootstrap: 1,000 resamples per contrast over replication/week contributions.
 - Primary graph-on-top-of-popularity estimand: PA1 minus C4.
 - Placebo estimands: PA1 minus C2/C3/C5 at the common primary target.

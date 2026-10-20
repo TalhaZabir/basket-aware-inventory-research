@@ -44,7 +44,7 @@ METHODS = [
 ]
 PREDICTIVE_QUANTILES = [0.05, 0.50, 0.90, 0.95, 0.975]
 PINBALL_QUANTILES = [0.50, 0.90, 0.95, 0.975]
-SAFETY_MULTIPLIERS = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0]
+SAFETY_MULTIPLIERS = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 9.0]
 
 
 def croston_one(x: np.ndarray, variant: str) -> float:
@@ -216,6 +216,9 @@ def policy_validation(root: Path, demand: np.ndarray, weeks: pd.Index, products:
                 result = simulate_policy(val_demand, val_weeks, forecast, residual_scale * multiplier, network, baskets, scenario_series, policy, 0.0, leads, service_target=target_nominal)
                 rows.append({"scenario_id": scenario_series["scenario_id"], "policy": policy, "nominal_target": target_nominal, "safety_multiplier": multiplier, **result})
     frame = pd.DataFrame(rows)
+    # Preserve every candidate so the calibration choice is auditable rather
+    # than reporting only the selected multiplier.
+    frame.to_csv(root / "results" / "phase1_policy_validation_candidates.csv", index=False)
     chosen = frame.assign(distance=(frame["item_fill_rate"] - frame["nominal_target"]).abs()).sort_values(["scenario_id", "policy", "distance", "safety_multiplier"]).groupby(["scenario_id", "policy"], as_index=False).head(1).copy()
     chosen["acceptance_within_3_points"] = (chosen["item_fill_rate"] - chosen["nominal_target"]).abs() <= 0.03
     return chosen.sort_values(["scenario_id", "policy"])

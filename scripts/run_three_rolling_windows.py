@@ -18,7 +18,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 from phase2_policy_components import _basket_edges, edge_buffer, scale_to_total  # noqa: E402
 from run_experiment import build_forecasts, basket_map, simulate_policy  # noqa: E402
-from run_phase2_validation import SAFETY_MULTIPLIER, lead_matrix  # noqa: E402
+from run_phase2_validation import SAFETY_MULTIPLIER, TARGET_GRID, lead_matrix  # noqa: E402
 
 ROOT = SCRIPT_DIR.parent
 SCENARIO_ID = "S05"
@@ -52,9 +52,20 @@ def build_window(name, train_end, val_start, val_end, test_start, test_end):
     test_demand, test_weeks = matrix.to_numpy()[:, test_idx], weeks[test_idx]
     lead = lead_matrix(scenario, "P1_independent_deterministic", len(test_idx), len(products), 0)
     rows = []
+    pa_result = None
     for policy, buffer in [("PA1_deterministic", graph), ("C4_deterministic", popularity)]:
         result = simulate_policy(test_demand, test_weeks, forecast, residual * SAFETY_MULTIPLIER, np.zeros(len(products)), baskets, scenario, policy, ALPHA, lead, service_target=0.90, basket_buffer=buffer)
+        if policy == "PA1_deterministic":
+            pa_result = result
         rows.append({"window": name, "train_end": train_end, "test_start": test_start, "test_end": test_end, "products": len(products), "test_weeks": len(test_idx), "graph_edges": len(default), "policy": policy, **{k: float(result[k]) for k in ["total_cost", "average_inventory_units", "item_fill_rate", "complete_basket_fill_rate", "unmet_units", "stockout_frequency"]}, "validation_wape_selected": float(forecast_metrics.loc[forecast_metrics["model"] == "selected_per_product", "validation_wape"].iloc[0])})
+    controls = []
+    for target in TARGET_GRID:
+        controls.append(simulate_policy(test_demand, test_weeks, forecast, residual * SAFETY_MULTIPLIER, np.zeros(len(products)), baskets, scenario, "P1_independent_deterministic", ALPHA, lead, service_target=float(target), basket_buffer=None))
+    control = min(controls, key=lambda x: abs(float(x["average_inventory_units"]) - float(pa_result["average_inventory_units"])))
+    gap = abs(float(control["average_inventory_units"]) - float(pa_result["average_inventory_units"])) / max(float(pa_result["average_inventory_units"]), 1.0)
+    rows.append({"window": name, "train_end": train_end, "test_start": test_start, "test_end": test_end, "products": len(products), "test_weeks": len(test_idx), "graph_edges": len(default), "policy": "C1_matched_to_PA1", "matching_gap": gap, **{k: float(control[k]) for k in ["total_cost", "average_inventory_units", "item_fill_rate", "complete_basket_fill_rate", "unmet_units", "stockout_frequency"]}, "validation_wape_selected": float(forecast_metrics.loc[forecast_metrics["model"] == "selected_per_product", "validation_wape"].iloc[0])})
+    for contrast, right in [("PA1_minus_C4", rows[-2]), ("PA1_minus_C1", rows[-1])]:
+        rows.append({"window": name, "scenario_id": SCENARIO_ID, "policy": contrast, "total_cost_difference": float(pa_result["total_cost"])-float(right["total_cost"]), "average_inventory_difference": float(pa_result["average_inventory_units"])-float(right["average_inventory_units"]), "item_fill_difference": float(pa_result["item_fill_rate"])-float(right["item_fill_rate"]), "basket_fill_difference": float(pa_result["complete_basket_fill_rate"])-float(right["complete_basket_fill_rate"]), "ci95_low": float(pa_result["item_fill_rate"])-float(right["item_fill_rate"]), "ci95_high": float(pa_result["item_fill_rate"])-float(right["item_fill_rate"]), "matching_gap": right.get("matching_gap", np.nan)})
     return rows
 
 

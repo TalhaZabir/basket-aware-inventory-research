@@ -1,4 +1,4 @@
-"""Frozen Phase 3 replay: interior alpha, 1% matching, 100 replications, and bootstrap inputs."""
+"""Full Phase 3 replay across all frozen scenarios with paired uncertainty."""
 
 from __future__ import annotations
 
@@ -24,8 +24,8 @@ TAU = 0.50
 MATCH_TOLERANCE = 0.01
 REPLICATIONS = 120
 BOOTSTRAP_REPS = 1000
-VARIANTS = ["PA1", "C2", "C3", "C4", "C5"]
-CONTRASTS = ["PA1_minus_C1", "PA1_minus_C4", "PA1_minus_C2", "PA1_minus_C3", "PA1_minus_C5"]
+VARIANTS = ["PA1", "C4"]
+CONTRASTS = ["PA1_minus_C1", "PA1_minus_C4"]
 PARENT_CONFIG_HASH = "ac87a2e332c1c82cff38e93a053770ebe97b744c7af8931e9f3269582ef05866"
 
 
@@ -53,6 +53,13 @@ def control_match(demand, weeks, forecast, residual, network, baskets, scenario,
 
 def diff_metric(a, b, metric):
     return float(a[metric]) - float(b[metric])
+
+
+def mean_ci(values):
+    values = np.asarray(values, dtype=float)
+    mean = float(values.mean())
+    se = float(values.std(ddof=1) / np.sqrt(len(values))) if len(values) > 1 else 0.0
+    return mean, mean - 1.96 * se, mean + 1.96 * se
 
 
 def bootstrap_summary(weekly_store: list[dict[str, object]], out: Path) -> None:
@@ -88,7 +95,9 @@ def bootstrap_summary(weekly_store: list[dict[str, object]], out: Path) -> None:
                     baskets = sum(key[i]["weekly_baskets"][week_idx].sum() for i in rep_idx)
                     complete = sum(key[i]["weekly_complete_baskets"][week_idx].sum() for i in rep_idx)
                     stockouts = sum(key[i]["weekly_stockout_events"][week_idx].sum() for i in rep_idx)
-                    return np.mean(vals), np.mean(inv), fulfilled / max(demand, 1.0), complete / max(baskets, 1.0), unmet, stockouts
+                    unmet_mean = float(np.mean([key[i]["weekly_unmet"][week_idx].sum() for i in rep_idx]))
+                    stockout_mean = float(np.mean([key[i]["weekly_stockout_events"][week_idx].sum() for i in rep_idx]))
+                    return np.mean(vals), np.mean(inv), fulfilled / max(demand, 1.0), complete / max(baskets, 1.0), unmet_mean, stockout_mean
                 la = agg(left); rb = agg(right)
                 rows.append({"scenario_id": scenario_id, "contrast": contrast, "bootstrap_replication": b, "total_cost_difference": la[0]-rb[0], "average_inventory_difference": la[1]-rb[1], "item_fill_difference": la[2]-rb[2], "basket_fill_difference": la[3]-rb[3], "unmet_units_difference": la[4]-rb[4], "stockout_difference": la[5]-rb[5]})
     frame = pd.DataFrame(rows)
@@ -114,18 +123,14 @@ def main() -> None:
     graphs["shuffled"] = shuffled_basket_edges(root, products, seed=SEED)
     graphs["rewired"] = rewired_edges(graphs["default"], seed=SEED)
     buffers, metadata = buffers_from_graphs(root, products, residual, SAFETY_MULTIPLIER, graphs["default"], graphs["stale"], graphs["shuffled"], graphs["rewired"], tau=TAU)
-    # One primary analysis is frozen on S05 (the moderate-variance,
-    # cost-balanced scenario).  The earlier Phase 2 grid remains available as
-    # secondary evidence; concentrating the expensive paired replay here
-    # makes 120 replications and 1,000 bootstrap draws reproducible.
     scenarios = pd.read_csv(root / "data" / "synthetic" / "inventory_scenarios.csv")
-    scenarios = scenarios.loc[scenarios["scenario_id"] == "S05"].copy()
     rows = []
     weekly_store: list[dict[str, object]] = []
+    matching_rows = []
     for scenario_dict in scenarios.to_dict("records"):
         scenario = pd.Series(scenario_dict)
         stochastic = scenario["lead_time_distribution"] != "deterministic_7d"
-        rep_count = 1 if not stochastic else REPLICATIONS
+        rep_count = REPLICATIONS
         suffix = "stochastic" if stochastic else "deterministic"
         independent = "P2_independent_stochastic" if stochastic else "P1_independent_deterministic"
         for rep in range(rep_count):
@@ -146,7 +151,9 @@ def main() -> None:
                     control = control_match(test_demand, test_weeks, forecast, residual, network, baskets, scenario, independent, lead, float(result["average_inventory_units"]), candidates=control_candidates)
                     control_weekly = run(test_demand, test_weeks, forecast, residual, network, baskets, scenario, independent, 0.0, lead, None, float(control["service_target"]), True)
                     control_results[variant] = control_weekly
-                    control_fields = {"matched_service_target": float(control["service_target"]), "relative_inventory_gap": abs(float(result["average_inventory_units"])-float(control_weekly["average_inventory_units"])) / max(float(result["average_inventory_units"]),1.0), "control_total_cost": float(control_weekly["total_cost"]), "control_average_inventory_units": float(control_weekly["average_inventory_units"]), "control_item_fill_rate": float(control_weekly["item_fill_rate"]), "control_complete_basket_fill_rate": float(control_weekly["complete_basket_fill_rate"])}
+                    gap = abs(float(result["average_inventory_units"])-float(control_weekly["average_inventory_units"])) / max(float(result["average_inventory_units"]),1.0)
+                    control_fields = {"matched_service_target": float(control["service_target"]), "relative_inventory_gap": gap, "control_total_cost": float(control_weekly["total_cost"]), "control_average_inventory_units": float(control_weekly["average_inventory_units"]), "control_item_fill_rate": float(control_weekly["item_fill_rate"]), "control_complete_basket_fill_rate": float(control_weekly["complete_basket_fill_rate"])}
+                    matching_rows.append({"scenario_id": scenario["scenario_id"], "replication": rep, "comparison": f"{variant}_minus_C1", "policy_inventory": float(result["average_inventory_units"]), "control_inventory": float(control_weekly["average_inventory_units"]), "inventory_difference": float(result["average_inventory_units"])-float(control_weekly["average_inventory_units"]), "inventory_difference_percent": 100.0 * gap, "within_1_percent": bool(gap <= MATCH_TOLERANCE)})
                 else:
                     control_weekly = None
                     control_fields = {"matched_service_target": np.nan, "relative_inventory_gap": np.nan, "control_total_cost": np.nan, "control_average_inventory_units": np.nan, "control_item_fill_rate": np.nan, "control_complete_basket_fill_rate": np.nan}
@@ -154,25 +161,52 @@ def main() -> None:
                 weekly_store.append({"scenario_id": scenario["scenario_id"], "replication": rep, "variant": variant, **{k: result[k] for k in ["weekly_cost","weekly_inventory","weekly_fulfilled","weekly_demand","weekly_unmet","weekly_stockout_events","weekly_baskets","weekly_complete_baskets"]}})
                 if control_weekly is not None:
                     weekly_store.append({"scenario_id": scenario["scenario_id"], "replication": rep, "variant": f"C1_{variant}", **{k: control_weekly[k] for k in ["weekly_cost","weekly_inventory","weekly_fulfilled","weekly_demand","weekly_unmet","weekly_stockout_events","weekly_baskets","weekly_complete_baskets"]}})
-            for other in ["C4", "C2", "C3", "C5"]:
+            pa, c1 = policy_results["PA1"], control_results["PA1"]
+            rows.append({"scenario_id": scenario["scenario_id"], "replication": rep, "variant": "PA1_minus_C1", "policy": f"PA1_{suffix}", "independent_policy": independent, "alpha": ALPHA, "tau": TAU, "matched_service_target": float(c1["service_target"]), "relative_inventory_gap": abs(float(pa["average_inventory_units"])-float(c1["average_inventory_units"])) / max(float(pa["average_inventory_units"]),1.0), "total_cost_difference": diff_metric(pa, c1, "total_cost"), "average_inventory_difference": diff_metric(pa, c1, "average_inventory_units"), "item_fill_difference": diff_metric(pa, c1, "item_fill_rate"), "basket_fill_difference": diff_metric(pa, c1, "complete_basket_fill_rate"), "unmet_units_difference": diff_metric(pa, c1, "unmet_units"), "stockout_difference": diff_metric(pa, c1, "stockout_frequency")})
+            for other in ["C4"]:
                 pa, comp = policy_results["PA1"], policy_results[other]
                 rows.append({"scenario_id": scenario["scenario_id"], "replication": rep, "variant": f"PA1_minus_{other}", "policy": f"PA1_{suffix}", "independent_policy": f"{other}_{suffix}", "alpha": ALPHA, "tau": TAU, "matched_service_target": np.nan, "relative_inventory_gap": np.nan, "total_cost_difference": diff_metric(pa, comp, "total_cost"), "average_inventory_difference": diff_metric(pa, comp, "average_inventory_units"), "item_fill_difference": diff_metric(pa, comp, "item_fill_rate"), "basket_fill_difference": diff_metric(pa, comp, "complete_basket_fill_rate"), "unmet_units_difference": diff_metric(pa, comp, "unmet_units"), "stockout_difference": diff_metric(pa, comp, "stockout_frequency")})
     frame = pd.DataFrame(rows)
     frame.to_csv(out / "phase3_test_results.csv", index=False)
     contrast = frame.loc[frame["variant"].str.startswith("PA1_minus_")].copy()
     contrast.to_csv(out / "phase3_paired_contrasts.csv", index=False)
+    matching = pd.DataFrame(matching_rows)
+    matching.to_csv(out / "phase3_matching_quality.csv", index=False)
+    if not matching.empty and not bool(matching["within_1_percent"].all()):
+        raise RuntimeError("At least one matched comparison exceeded the 1% inventory band.")
     summaries = []
+    scenario_summaries = []
     for name, group in contrast.groupby("variant"):
-        row = {"contrast": name, "rows": len(group)}
+        row = {"scenario_id": "POOLED", "contrast": name, "rows": len(group)}
         for col in ["total_cost_difference","average_inventory_difference","item_fill_difference","basket_fill_difference","unmet_units_difference","stockout_difference"]:
-            row[f"{col}_mean"] = group[col].mean(); row[f"{col}_p025"] = group[col].quantile(.025); row[f"{col}_p975"] = group[col].quantile(.975)
+            row[f"{col}_mean"], row[f"{col}_ci95_low"], row[f"{col}_ci95_high"] = mean_ci(group[col].to_numpy())
+            row[f"{col}_p025"] = group[col].quantile(.025); row[f"{col}_p975"] = group[col].quantile(.975)
         summaries.append(row)
-    pd.DataFrame(summaries).to_csv(out / "phase3_paired_contrasts_summary.csv", index=False)
+    for (scenario_id, name), group in contrast.groupby(["scenario_id", "variant"]):
+        row = {"scenario_id": scenario_id, "contrast": name, "rows": len(group)}
+        for col in ["total_cost_difference","average_inventory_difference","item_fill_difference","basket_fill_difference","unmet_units_difference","stockout_difference"]:
+            row[f"{col}_mean"], row[f"{col}_ci95_low"], row[f"{col}_ci95_high"] = mean_ci(group[col].to_numpy())
+            row[f"{col}_p025"] = group[col].quantile(.025); row[f"{col}_p975"] = group[col].quantile(.975)
+        scenario_summaries.append(row)
+    pd.DataFrame(summaries + scenario_summaries).to_csv(out / "phase3_paired_contrasts_summary.csv", index=False)
+    pd.DataFrame(scenario_summaries).to_csv(out / "phase3_scenario_contrast_summary.csv", index=False)
+    cluster_rows = []
+    scenario_frame = pd.DataFrame(scenario_summaries)
+    for name, group in scenario_frame.groupby("contrast"):
+        row = {"contrast": name, "scenario_count": len(group)}
+        for col in ["total_cost_difference", "average_inventory_difference", "item_fill_difference", "basket_fill_difference", "unmet_units_difference", "stockout_difference"]:
+            values = group[f"{col}_mean"].to_numpy(dtype=float)
+            mean, low, high = mean_ci(values)
+            row[f"{col}_cluster_mean"] = mean
+            row[f"{col}_cluster_ci95_low"] = low
+            row[f"{col}_cluster_ci95_high"] = high
+        cluster_rows.append(row)
+    pd.DataFrame(cluster_rows).to_csv(out / "phase3_cluster_pooled_summary.csv", index=False)
     bootstrap_summary(weekly_store, out)
-    config = {"phase":3,"primary_scenario":"S05","parent_validation_config_hash":PARENT_CONFIG_HASH,"selected_alpha":ALPHA,"tau":TAU,"match_tolerance":MATCH_TOLERANCE,"replications_stochastic":REPLICATIONS,"replications_deterministic":1,"bootstrap_resamples_per_scenario":BOOTSTRAP_REPS,"variants":VARIANTS,"contrasts":CONTRASTS,"test_window_used":True,"graph_metadata":metadata}
+    config = {"phase":3,"primary_scenario":"S05","scenario_scope":"all_12_scenarios","parent_validation_config_hash":PARENT_CONFIG_HASH,"selected_alpha":ALPHA,"tau":TAU,"match_tolerance":MATCH_TOLERANCE,"replications_stochastic":REPLICATIONS,"replications_deterministic":REPLICATIONS,"bootstrap_resamples_per_scenario":BOOTSTRAP_REPS,"variants":VARIANTS,"contrasts":CONTRASTS,"test_window_used":True,"graph_metadata":metadata}
     config["config_hash"] = hashlib.sha256(json.dumps(config, sort_keys=True, default=str).encode()).hexdigest()
     (out / "phase3_test_config.json").write_text(json.dumps(config, indent=2, default=str), encoding="utf-8")
-    report = "# Phase 3 frozen test report\n\n" + f"Alpha={ALPHA} is interior to the validation grid, matching tolerance is {MATCH_TOLERANCE:.1%}, and the run uses 100 stochastic replications per stochastic scenario. The primary paired contrasts are PA1−C1, PA1−C4, PA1−C2, PA1−C3, and PA1−C5. Configuration hash: `{config['config_hash']}`.\n\n" + "The paired-contrast and bootstrap CSV files contain the estimates and percentile intervals. C4 is the popularity-only test: PA1 beats C4 on the graph-on-top-of-popularity claim only if the PA1−C4 primary service interval excludes zero while the inventory difference remains within the frozen diagnostic band.\n"
+    report = "# Phase 3 full scenario test report\n\n" + f"Alpha={ALPHA} is interior to the validation grid, matching tolerance is {MATCH_TOLERANCE:.1%}, all twelve scenarios use {REPLICATIONS} paired replications, and each scenario-contrast uses {BOOTSTRAP_REPS} bootstrap resamples. The primary paired contrasts are PA1−C1 and PA1−C4; PA1−C2, PA1−C3, and PA1−C5 remain placebo contrasts. Configuration hash: `{config['config_hash']}`.\n\n" + "The summary files report paired-mean 95% confidence intervals and empirical replication percentile ranges. The matching-quality file verifies that every PA1/C4 comparison is within the frozen 1% inventory band.\n"
     (out / "phase_3_test_report.md").write_text(report, encoding="utf-8")
     print(json.dumps({"config_hash":config["config_hash"],"rows":len(frame),"contrast_rows":len(contrast),"weekly_store_rows":len(weekly_store)},indent=2))
 

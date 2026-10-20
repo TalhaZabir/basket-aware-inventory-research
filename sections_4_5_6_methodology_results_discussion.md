@@ -120,7 +120,7 @@ Products outside the universe are removed before replay. Baskets with no in-univ
 
 Receipts follow each order's scenario lead-time draw and are posted before same-day ordering. There is no warm-up or pre-test pipeline: all policies start with the same independent deterministic target based on the first test forecast, two-week coverage, and residual dispersion; the initial target excludes the basket buffer.
 
-Common random numbers are used across policies. Deterministic scenarios use one path; the primary stochastic S05 scenario uses 120 paired paths. At each replication, the independent control is selected from the frozen target grid and, if necessary, one linear interpolation is attempted; the accepted maximum relative inventory gap was 0.79%, below the 1% band. Demand and baskets remain fixed. The primary uncertainty analysis uses 1,000 paired resamples over replications and test weeks; the rolling-origin check repeats the analysis over three chronological windows.
+Common random numbers are used across policies. All twelve scenarios are replayed with 120 paired replications; deterministic scenarios repeat the identical demand path so their intervals are degenerate. At each replication, the independent control is selected from the frozen target grid and, if necessary, one linear interpolation is attempted; every accepted comparison is below the 1% band. Demand and baskets remain fixed. The primary uncertainty analysis uses 1,000 paired resamples over replications and test weeks; the rolling-origin check repeats the analysis over three chronological windows.
 
 ## 4.9 Evaluation protocol and uncertainty estimates
 
@@ -134,7 +134,7 @@ Effects are paired within scenario and seed. PA1 minus C4 is the primary like-fo
 
 Sensitivity analyses vary: (1) graph-support and minimum-pair thresholds; (2) graph density and top-k neighbourhood size; (3) service target; (4) holding-cost and shortage-penalty ratios; (5) deterministic versus low-, high-, and right-skewed lead times; (6) lost-sales versus backorder treatment; (7) product-universe and sparse-series filters; (8) basket fulfilment defined by all requested units versus all distinct items; (9) 1,000-resample paired bootstrap uncertainty; and (10) three rolling-origin windows with training-only re-estimation of the universe, forecasts, and graph. Threshold and top-k sensitivity remains a one-scenario diagnostic, not a pooled claim.
 
-The earlier Phase 2 edge-level run used alpha = 3.0 at the grid boundary and is retained as historical secondary evidence. The primary analysis supersedes it for interpretation: alpha = 1.5 is interior, the matching tolerance is 1%, and the primary configuration hash is `983c3e4505db8a6efe8fbf2538b2332abad1bb80b35c1c87d0ab8f2741d44097`.
+The earlier Phase 2 edge-level run used alpha = 3.0 at the grid boundary and is retained as historical secondary evidence. The primary analysis supersedes it for interpretation: alpha = 1.5 is interior, the matching tolerance is 1%, and the primary configuration hash is `70cc7bc98246449e106eb25e81456a03d6364806cdd68953bd9f72523d26d065`.
 
 The executed experiment froze model versions, thresholds, cost table, critical-fractile rule, lead-time distributions, initial conditions, random seeds, and primary outcome definitions before test evaluation. The primary Phase 3 replay was run once under its recorded parent validation hash. Exact settings, level tables, paired contrasts, bootstrap draws, rolling windows, and the external dataset profile are recorded in the research package.
 
@@ -198,7 +198,7 @@ These test metrics are honest held-out diagnostics, not tuning statistics. The n
 
 ## 5.4 Primary policy levels and paired contrasts
 
-The primary replay is S05: low-variance stochastic lead time, h = 0.15, p = 5.0, and a 120-replication paired design. S05 is one of the twelve synthetic scenarios; it is the only scenario used for the final PA1-versus-C4 Phase 3 estimand. The level table below reports absolute outcomes; intervals are empirical 2.5th–97.5th replication percentiles. C1 is the independent control matched separately to PA1. C2, C3, C4, and C5 are evaluated at the common primary target and are therefore placebo/control contrasts rather than additional inventory-matched independent baselines.
+The primary replay covers all twelve synthetic scenarios, with 120 paired replications per scenario and the same 1% inventory-matching rule. The earlier S05 table is retained as a diagnostic in the package, but it is not the headline estimand. Because the scenarios use different h and p values, the headline result is a scenario-clustered mean of within-scenario differences, not a pooled cost level. Replication-level intervals below are normal 95% confidence intervals for the paired mean difference; deterministic scenarios have degenerate intervals.
 
 | Policy | Cost | Average inventory | Item fill | Basket fill | Unmet units | Stockout frequency |
 |---|---:|---:|---:|---:|---:|---:|
@@ -211,7 +211,14 @@ The primary replay is S05: low-variance stochastic lead time, h = 0.15, p = 5.0,
 
 Relative to C1, PA1 costs 4.42% more and carries 0.78% more average inventory. Relative to C4, it costs 3.18% more and carries 0.47% more average inventory. These percentages are descriptive within S05 and use the absolute level means above.
 
-The primary paired contrasts are reported below. PA1−C1 is the inventory-matched independent comparison; PA1−C4 is the graph-on-top-of-popularity test. PA1−C2/C3/C5 are common-target graph-placebo contrasts. Intervals are paired empirical replication intervals; the package also contains 1,000-resample week-and-replication bootstrap intervals, which are used for the primary direction checks.
+The primary paired contrasts are PA1−C4, the graph-on-top-of-popularity test, and PA1−C1, the inventory-matched independent comparison. The scenario-clustered results are:
+
+| Contrast | Cost difference (95% CI) | Inventory difference (95% CI) | Item-fill difference (95% CI) | Basket-fill difference (95% CI) |
+| --- | ---: | ---: | ---: | ---: |
+| PA1 − C1 | +201,341 [132,942, 269,741] | +7,585 [4,435, 10,736] | +0.0268 [0.0260, 0.0276] | +0.1113 [0.0902, 0.1325] |
+| PA1 − C4 | +194,213 [113,211, 275,215] | +6,092 [6,017, 6,168] | −0.0258 [−0.0268, −0.0248] | −0.0644 [−0.0659, −0.0630] |
+
+The direction is unchanged in every scenario: PA1−C1 is positive for item and basket fill in S01–S12, whereas PA1−C4 is negative for both. Cost differences are positive in every scenario for both contrasts. The per-scenario table, matching-quality table, and forest-plot-ready values are `results/phase3_scenario_contrast_summary.csv` and `results/phase3_matching_quality.csv`. Maximum accepted inventory gaps were 0.80% for PA1−C1 and 0.99% for C4−C1; no comparison violated the 1% band.
 
 | Contrast | Cost difference | Inventory difference | Item-fill difference | Basket-fill difference |
 |---|---:|---:|---:|---:|
@@ -221,13 +228,15 @@ The primary paired contrasts are reported below. PA1−C1 is the inventory-match
 | PA1 − C3 | −69,665 [−74,949, −64,060] | −2,122 [−3,824, −246] | +0.0105 [+0.0099, +0.0112] | +0.0352 [+0.0260, +0.0441] |
 | PA1 − C5 | −147,460 [−151,484, −143,045] | −4,914 [−6,483, −3,509] | +0.0222 [+0.0216, +0.0227] | +0.0410 [+0.0339, +0.0486] |
 
-The PA1−C4 bootstrap intervals were cost +110,800 to +228,187, item fill −0.0324 to −0.0189, and basket fill −0.0845 to −0.0509. Thus the primary evidence rejects “graph on top of popularity” in this replay. PA1 beat C2, C3, and C5 on both service measures, but those common-target placebo results do not establish that the original edge topology is the cause of the advantage; they show only that the frozen PA1 allocation outperformed those alternative allocations under the same replay.
+The 1,000-resample week-and-replication bootstrap is a direction check rather than a replacement for the paired mean CI. Its pooled percentile interval for PA1−C4 is negative for item fill (approximately −0.033 to −0.018) and basket fill (approximately −0.082 to −0.046); the corresponding PA1−C1 intervals are positive (approximately 0.020 to 0.034 for item fill and 0.072 to 0.207 for basket fill). The bootstrap cost interval is broad because it resamples scenarios with different synthetic cost scales, so cost inference uses the scenario-clustered mean CI. Thus the all-scenario evidence does not support a graph-on-top-of-popularity gain in this replay. The common-target placebo results remain allocation checks, not topology-identification tests.
+
+Six-fold calibration was chosen on the validation window, before test evaluation, by selecting the candidate multiplier closest to the critical-fractile item-fill target. Across the 24 scenario-policy validation rows, six-fold had mean item fill 0.9487 against mean target 0.9725, versus 0.9152 at three-fold and 0.9625 at nine-fold; the six-fold candidate was the lowest-cost eligible interior calibration satisfying the pre-registered three-percentage-point acceptance rule. In the held-out test, however, the matched C1 target was approximately 0.993 on average while realised C1 item fill was approximately 0.83–0.84, reflecting peak-period under-forecasting and showing that validation calibration is optimistic for the test window. The three-/six-/nine-fold table is `results/phase3_calibration_robustness.csv`.
 
 [[FRONTIER_FIGURE]]
 
 [[COST_PENALTY_FIGURE]]
 
-## 5.5 Rolling windows, external data, and mechanism
+## 5.5 Rolling windows, sensitivity, external data, and mechanism
 
 The three rolling windows give mixed robustness evidence. The compact outcome table reports all primary outcome classes, not only service:
 
@@ -240,7 +249,19 @@ The three rolling windows give mixed robustness evidence. The compact outcome ta
 | W3 primary | PA1 | 3,784,125 | 858,085 | 0.9401 | 0.9191 | 89,015 | 0.0386 |
 | W3 primary | C4 | 3,763,181 | 857,419 | 0.9434 | 0.9184 | 84,189 | 0.0403 |
 
-PA1 item fill was below C4 in all three windows, while basket fill was higher in W1, lower in W2, and nearly equal in W3. The direction is therefore window-dependent and does not support a universal graph benefit. The external dunnhumby top-300 replay produced full item and basket fill for both graph and popularity buffers, so it is a data-pipeline and transportability check rather than a discriminating policy result.
+PA1 item fill was below C4 in all three windows, while basket fill was higher in W1, lower in W2, and nearly equal in W3. These rolling outputs are level checks; the corresponding paired contrast file reports PA1−C4 and PA1−C1 with window-specific intervals. The direction is therefore not a universal graph benefit. Sensitivity settings were not merely listed: top-k, minimum pair count, service target, h/p ratio, fixed order cost K, lost-sales versus backorder, and all-units versus distinct-item basket definitions each changed at least one output in the released sensitivity audit. The audit is in `results/gate_sensitivity_summary.csv`; threshold and top-k checks remain one-scenario diagnostics.
+
+For transparency, the rolling contrast estimates were:
+
+| Window | PA1−C4 item fill | PA1−C4 basket fill | PA1−C1 item fill | PA1−C1 basket fill |
+| --- | ---: | ---: | ---: | ---: |
+| W1 | −0.0003 [−0.0003, −0.0003] | +0.0037 [+0.0037, +0.0037] | +0.0055 [+0.0055, +0.0055] | +0.0258 [+0.0258, +0.0258] |
+| W2 | −0.0031 [−0.0031, −0.0031] | −0.0076 [−0.0076, −0.0076] | +0.0057 [+0.0057, +0.0057] | +0.0332 [+0.0332, +0.0332] |
+| W3 | −0.0032 [−0.0032, −0.0032] | +0.0007 [+0.0007, +0.0007] | +0.0030 [+0.0030, +0.0030] | +0.0253 [+0.0253, +0.0253] |
+
+These are single-path chronological diagnostics, so the displayed intervals are degenerate and should not be mistaken for sampling intervals. In these rolling checks the C1 grid match was looser than the primary 1% band (5–7%); therefore the all-scenario 1% matched analysis, not the rolling C1 contrast, is the headline inference.
+
+The external dunnhumby top-300 replay produced full item and basket fill for both graph and popularity buffers, so it is a data-pipeline and transportability check rather than a discriminating policy result.
 
 The mechanism is simple. A basket buffer can help only if it reallocates stock toward products whose joint availability affects the complete-order metric, while the resulting inventory, purchase, ordering, and shortage costs remain acceptable. A popularity buffer can achieve the same outcome when high-volume products also dominate basket completion. The PA1−C4 result shows that co-purchase edges did not add value on top of popularity in the primary replay; the placebo contrasts show that buffer allocation, not necessarily graph topology, drives the observed differences.
 
@@ -250,7 +271,7 @@ All scenario-level rows, matched comparisons, configuration hashes, figures, rol
 
 ## 6.1 Interpretation of the executed evidence
 
-The primary Phase 3 replay shows a conditional service gain against the inventory-matched independent control, but not a graph-specific gain over popularity. PA1−C1 is positive for item and basket fill, while PA1−C4 is negative for both and more costly. The tighter 1% match, 120 replications, 1,000-resample bootstrap, and three rolling windows make the uncertainty statement stronger than the earlier pilot, but the extra-buffer explanation is not fully ruled out because the matched independent control is still slightly lower in inventory and the C4 comparison is not a causal experiment. Positive service differences should not be read as evidence that making one product available changes demand for its partner.
+The all-scenario Phase 3 replay shows a conditional service gain against the inventory-matched independent control, but not a graph-specific gain over popularity. PA1−C1 is positive for item and basket fill, while PA1−C4 is negative for both and more costly in every scenario. The tighter 1% match, 120 replications, 1,000-resample bootstrap, and three rolling windows strengthen the uncertainty statement, but the extra-buffer explanation is not fully ruled out because PA1 remains slightly higher in inventory than its matched control and C4 is not a causal experiment. Positive service differences should not be read as evidence that making one product available changes demand for its partner.
 
 ## 6.2 Relationship to prior literature
 
@@ -276,13 +297,13 @@ Researchers should separate forecast improvement from policy improvement and sho
 
 UCI Online Retail II records completed transaction lines, not attempted demand, on-hand balances, purchase orders, supplier dates, receipts, stockouts, lost sales, backorders, or observed costs. Complete-basket fulfilment is therefore a replay proxy; it cannot recover abandoned orders, substitutions, or historical stockout rates. Inventory, lead-time, cost, and service outcomes are simulated or normalized throughout the package.
 
-The primary robustness upgrades are complete: alpha = 1.5 is interior, matching is within 1%, the primary stochastic replay uses 120 replications, bootstrap uncertainty uses 1,000 resamples, and three rolling windows are reported. The primary Phase 3 claim is nevertheless based on one of the twelve synthetic scenarios, S05; the other scenarios remain a broader sensitivity and legacy four-policy record, not equivalent PA1-versus-C4 primary tests. The second dunnhumby pipeline is separate and non-discriminating because the retained top-product universe has full simulated fill; it does not convert the study into a causal or operational validation. The Scopus and Web of Science searches were specified but not run because licensed exports were unavailable, and the reference list is an open-record cross-check rather than a completed database-verified systematic review. The code is publicly archived at GitHub, but no DOI has yet been minted for the repository.
+The primary robustness upgrades are complete: alpha = 1.5 is interior, matching is within 1%, all twelve scenarios use 120 paired replications, bootstrap uncertainty uses 1,000 resamples, and three rolling windows are reported. The second dunnhumby pipeline is separate and non-discriminating because the retained top-product universe has full simulated fill; it does not convert the study into a causal or operational validation. The Scopus and Web of Science searches were specified but not run because licensed exports were unavailable, and the reference list is an open-record cross-check rather than a completed database-verified systematic review. The code is publicly archived at GitHub, but no DOI has yet been minted for the repository.
 
-Future research needs observed inventory and supplier events, attempted orders and substitutions, calibrated probabilistic forecasts with CRPS or quantile loss, richer joint-replenishment and forecast-then-optimise baselines, and operational constraints such as case packs, capacity, perishability, and supplier reliability. A public repository should also archive the exact source-download manifests and released configuration alongside the project code.
+Future research needs observed inventory and supplier events, attempted orders and substitutions, calibrated probabilistic forecasts with CRPS or quantile loss, richer joint-replenishment and forecast-then-optimise baselines, and operational constraints such as case packs, capacity, perishability, and supplier reliability. The public repository archives the released configuration and source-download manifests; a DOI remains future work.
 
 # 9. Conclusion
 
-In the primary S05 replay, PA1 improved simulated item and complete-basket fill relative to a tightly matched independent control, but it cost more and performed worse than the popularity-only C4 control. PA1 also exceeded the three common-target placebo buffers, but those comparisons do not identify graph topology as the cause. Three rolling windows did not show a universal direction. The evidence therefore supports a conditional service trade-off, not a graph-specific economic advantage. The extra-inventory explanation is not yet ruled out, and missing inventory, supplier, stockout, and attempted-demand records prevent historical or causal claims. The defensible conclusion is that basket structure remains a candidate coordination signal for controlled offline testing, while popularity is the stronger baseline in this study.
+Across twelve synthetic scenarios, PA1 improved simulated item and complete-basket fill relative to its inventory-matched independent control, but it cost more and performed worse than the popularity-only C4 control in every scenario. Rolling windows did not establish a universal graph benefit, and the external check was non-discriminating. The evidence therefore supports a conditional service trade-off, not a graph-specific economic advantage. The extra-inventory explanation is not yet ruled out, and missing inventory, supplier, stockout, and attempted-demand records prevent historical or causal claims. Popularity is the stronger tested baseline; basket structure remains a candidate signal for controlled offline testing.
 
 # 10. References and appendices
 
@@ -436,7 +457,7 @@ This appendix records the configuration that was frozen for the executed analyse
 | review_interval_weeks / coverage_weeks | 1 / 2 |
 | basket_fulfilment_proxy | Share of observed test-week baskets whose full in-universe quantities fit within simulated on-hand stock at weekly review |
 | stockout_model | Lost sales in the primary analysis; backorder is a sensitivity condition |
-| stochastic_replications / deterministic_replications | Phase 3 primary S05: 120 / 1; earlier Phase 2 grid: 30 / 1 |
+| stochastic_replications / deterministic_replications | Phase 3 all-scenario replay: 120 / 120; earlier Phase 2 grid: 30 / 1 |
 | replication_reason | 120 paired stochastic paths provide stable replication intervals while keeping one primary scenario; deterministic paths are degenerate |
 | primary_contrast / secondary_contrast | PA1 minus C4 at matched inventory; PA1 minus C1 secondary; PA1 minus C2/C3/C5 common-target placebos |
 | lead_time_sampling | Clipped rounded normal for low/high variance; truncated exponential discrete distribution on 2 to 21 days for right-skewed lead time |
@@ -444,7 +465,7 @@ This appendix records the configuration that was frozen for the executed analyse
 | primary_cost | Holding plus shortage plus ordering plus normalized purchase cost |
 | observed_data_boundary | Inventory, supplier, lead-time, stockout, lost-sales, and historical cost fields are unavailable and remain synthetic or simulated |
 
-The Phase 3 primary test configuration hash is `983c3e4505db8a6efe8fbf2538b2332abad1bb80b35c1c87d0ab8f2741d44097`, under parent alpha-validation hash `ac87a2e332c1c82cff38e93a053770ebe97b744c7af8931e9f3269582ef05866`. It produced 1,080 policy/contrast rows, 120 paired replications, and 1,000 bootstrap draws per contrast; the maximum accepted relative inventory gap was 0.79% for PA1 and 0.79% for C4. The rolling-origin file contains three windows, and the dunnhumby source profile records the external checksum and license statement.
+The Phase 3 primary test configuration hash is `70cc7bc98246449e106eb25e81456a03d6364806cdd68953bd9f72523d26d065`, under parent alpha-validation hash `ac87a2e332c1c82cff38e93a053770ebe97b744c7af8931e9f3269582ef05866`. It produced 4,320 policy rows, 1,440 rows for each headline contrast, 120 replications in each of twelve scenarios, and 1,000 bootstrap draws per contrast. No matching comparison exceeded the 1% band. The rolling-origin file contains three windows, and the dunnhumby source profile records the external checksum and license statement.
 
 ### C.2 Scenario lead-time PMFs
 
@@ -471,13 +492,13 @@ Lead times are sampled in days and then converted to whole review periods by `ce
 | Holding and shortage cost units | h per unit-week of on-hand inventory; p per unmet demand unit in the replayed week |
 | Basket service rule | A basket is complete only when every in-universe product quantity in the projected observed basket can be fulfilled from on-hand stock at weekly review |
 | Partial fills | Fulfilled units consume stock; remaining units are unmet under lost sales and do not become backorders in the primary analysis |
-| Stochastic replications | 120 paired replications for primary S05; common random numbers; one path for deterministic scenarios |
+| Stochastic replications | 120 paired replications in each of twelve scenarios; common random numbers; deterministic scenarios repeat the same path |
 | Placebo control | C2 degree-preserving rewire, C3 label-shuffled graph, and C5 stale graph; the earlier score-shuffle file remains a score placebo and does not test topology |
 | Bootstrap | 1,000 paired resamples over replications and test-week contributions; pooled intervals are reported from pooled draws rather than averaged scenario endpoints |
 
 ### C.4 Frozen data and output controls
 
-The transaction cleaning rule, product universe, training-only edge construction, random seeds, scenario identifiers, output filenames, and sensitivity definitions were frozen before the final result tables were assembled. The primary S05 run uses 120 paired stochastic paths, 1,000 bootstrap resamples, and the 1% matching band. The resulting tables and figures are the files listed in Appendix A.
+The transaction cleaning rule, product universe, training-only edge construction, random seeds, scenario identifiers, output filenames, and sensitivity definitions were frozen before the final result tables were assembled. The primary all-scenario run uses 120 paired paths per scenario, 1,000 bootstrap resamples, and the 1% matching band. The resulting tables and figures are the files listed in Appendix A.
 
 ## 10.5 Appendix D. Evidence status
 

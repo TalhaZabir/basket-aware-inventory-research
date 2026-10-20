@@ -24,7 +24,7 @@ Prepared 20 October 2026 for the project “Basket-Aware Inventory Optimization 
 - `scripts/run_experiment.py`: chronological forecast selection, M5 sample benchmark, four-policy UCI inventory simulation, paired stochastic replications, and result tables.
 - `scripts/run_p0_analyses.py`: inventory-matched independent baseline, service-inventory frontiers, shuffled-score placebo, break-even shortage ratios, sensitivity analyses, and RQ3 stratification.
 - `scripts/run_p1_analyses.py`: explicit missing contrasts, test-week bootstrap intervals, expanded alpha calibration, and rolling-origin window robustness.
-- `scripts/run_phase3_calibration.py`, `scripts/run_phase3_test.py`, `scripts/summarize_phase3_primary.py`: interior-alpha validation, the primary S05 replay, matched-control and placebo contrasts, and level tables.
+- `scripts/run_phase3_calibration.py`, `scripts/run_phase3_test.py`, `scripts/summarize_phase3_primary.py`: interior-alpha validation, the all-scenario replay, matched-control and placebo contrasts, and level tables.
 - `scripts/run_three_rolling_windows.py`: three chronological rolling-origin checks with training-only re-estimation.
 - `scripts/prepare_and_run_dunnhumby.py`: separate external basket-data preparation and replay.
 - `results/`: executed forecast metrics, replication-level inventory outcomes, all four paired policy contrasts, frozen configuration, frontiers, placebo results, matched-baseline results, break-even analysis, bootstrap intervals, rolling-origin outputs, sensitivity tables, and the generated results reports.
@@ -65,7 +65,7 @@ For UCI, define the model-training period before deriving product universes, bas
 - validation: 2011-07-01 through 2011-08-31;
 - test: 2011-09-01 through the last observed date in the cleaned data.
 
-The executed primary experiment uses the corresponding Monday-start weeks: training through 2011-06-27, validation 2011-07-04 through 2011-08-29, and test 2011-09-05 through 2011-12-05. It does not use random train-test splits. Product selection, forecast selection, and co-purchase features are based only on the training period; validation selects the basket-buffer parameter, and the test period is used once. The primary replay is S05 with alpha = 1.5, a 1% inventory-matching band, 120 paired stochastic replications, and 1,000 bootstrap resamples. Alpha = 3.0 is retained only as historical Phase 2 evidence and sensitivity output.
+The executed primary experiment uses the corresponding Monday-start weeks: training through 2011-06-27, validation 2011-07-04 through 2011-08-29, and test 2011-09-05 through 2011-12-05. It does not use random train-test splits. Product selection, forecast selection, and co-purchase features are based only on the training period; validation selects the basket-buffer parameter, and the test period is used once. The primary replay covers all twelve scenarios with alpha = 1.5, a 1% inventory-matching band, 120 paired replications per scenario, and 1,000 bootstrap resamples. Alpha = 3.0 is retained only as historical Phase 2 evidence and sensitivity output. See `results/phase3_gate1_report.md` for the Gate 1 evidence summary.
 
 For M5, the competition’s validation boundary is `d_1913`; the next 28 daily columns in `sales_train_evaluation.csv` are the public validation horizon. The preparation script does not tune a forecasting model or claim competition performance.
 
