@@ -326,7 +326,7 @@ Zhang, R., Kaku, I., & Xiao, Y. (2012). Model and heuristic algorithm of the joi
 
 Feng, H., Wu, Q., Muthuraman, K., & Deshpande, V. (2015). Replenishment policies for multi-product stochastic inventory systems with correlated demand and joint-replenishment costs. Production and Operations Management, 24(4), 647–664. https://doi.org/10.1111/poms.12290
 
-Baykal-Gürsoy, M., & Erkip, N. K. (2011). Forecasting for inventory planning under correlated demand. Wiley Encyclopedia of Operations Research and Management Science, 1–11. https://doi.org/10.1002/9780470400531.eorms0330
+Rahimi, Z., Down, D. G., Li, N., & Arnold, D. M. (2026). Ordering policies for multi-item inventory systems with correlated demands. European Journal of Operational Research, 333(2), 381–397. https://doi.org/10.1016/j.ejor.2025.12.042
 
 Poormoaied, S., & Atan, Z. (2020). A continuous review policy for two complementary products with interrelated demand. Computers & Industrial Engineering, 150, 106980. https://doi.org/10.1016/j.cie.2020.106980
 
@@ -338,9 +338,9 @@ Song, J.-S., Zhang, H., Hou, Y., & Wang, M. (2010). The effect of lead time and 
 
 Hansen, O., Transchel, S., & Friedrich, H. (2023). Replenishment strategies for lost sales inventory systems of perishables under demand and lead time uncertainty. European Journal of Operational Research, 308(2), 661–675. https://doi.org/10.1016/j.ejor.2022.11.041
 
-Berry, L. R., Helman, P., & West, M. (2020). Probabilistic forecasting of heterogeneous consumer transaction-sales time series. International Journal of Forecasting, 36(2), 552–569. https://doi.org/10.1016/j.ijforecast.2019.07.007
-
 Martin, J., Nenycz-Thiel, M., Dawes, J., Tanusondjaja, A., Cohen, J., McColl, B., & Trinh, G. (2020). Fundamental basket size patterns and their relation to retailer performance. Journal of Retailing and Consumer Services, 54, 102032. https://doi.org/10.1016/j.jretconser.2020.102032
+
+Omar, H., Klibi, W., Babai, M. Z., & Ducq, Y. (2023). Basket data-driven approach for omnichannel demand forecasting. International Journal of Production Economics, 257, 108748. https://doi.org/10.1016/j.ijpe.2022.108748
 
 Peng, L., Wang, L., & Wang, S. (2022). A review of the joint replenishment problem from 2006 to 2022. Management System Engineering, 1, 9. https://doi.org/10.1007/s44176-022-00010-3
 
@@ -392,7 +392,7 @@ Rangapuram, S. S., Werner, L. D., Benidis, K., Mercado, P., Gasthaus, J., & Janu
 
 ## 10.2 Appendix A. Data package contents
 
-The reproducible code and data package is publicly archived at [GitHub](https://github.com/TalhaZabir/basket-aware-inventory-research). The public data records are [UCI Online Retail II](https://doi.org/10.24432/C5CG6D), the separate [M5 data release on Zenodo](https://doi.org/10.5281/zenodo.10203108), and the documented [dunnhumby Complete Journey release](https://github.com/bltap-plmarket/dunnhumby-complete-journey/releases/tag/v1.0-data), whose source page is [dunnhumby Source Files](https://www.dunnhumby.com/source-files/). The repository has no DOI yet. UCI identifies Online Retail II as licensed under the Creative Commons Attribution 4.0 International license (CC BY 4.0). Redistribution or adaptation of that source requires appropriate attribution to Daqing Chen and the UCI Machine Learning Repository. The dunnhumby mirror states DbCL-1.0; its terms should be reviewed before redistribution. The M5 files remain subject to their own source terms.
+The reproducible code and data package is publicly archived at [GitHub](https://github.com/TalhaZabir/basket-aware-inventory-research). The public data records are [UCI Online Retail II](https://doi.org/10.24432/C5CG6D), the separate [M5 data release on Zenodo](https://doi.org/10.5281/zenodo.10203108), and the documented [dunnhumby Complete Journey release](https://github.com/bltap-plmarket/dunnhumby-complete-journey/releases/tag/v1.0-data), whose source page is [dunnhumby Source Files](https://www.dunnhumby.com/source-files/). The repository has no DOI yet. UCI identifies Online Retail II as licensed under the Creative Commons Attribution 4.0 International license (CC BY 4.0). Redistribution or adaptation of that source requires appropriate attribution to Daqing Chen and the UCI Machine Learning Repository. The dunnhumby mirror states DbCL-1.0; its terms should be reviewed before redistribution. The M5 files remain subject to their own source terms. The search and metadata-verification boundary is recorded in `results/gate5_literature_audit.md`.
 
 | Component | Contents | Status and interpretation |
 |---|---|---|

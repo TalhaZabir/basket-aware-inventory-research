@@ -1,0 +1,2 @@
+edge_count,lift_cut_p90,pair_count_cut_p75,low_pop_products,high_pop_products,note
+1576291,17.958128078817733,18.0,235,343,All thresholds and masks use training-period edge and volume features only.
