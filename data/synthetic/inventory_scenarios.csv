@@ -1,0 +1,13 @@
+scenario_id,scenario_status,review_interval_days,lead_time_distribution,lead_time_mean_days,lead_time_sd_days,lead_time_min_days,lead_time_max_days,holding_cost_per_unit_week,shortage_penalty_per_unit,ordering_cost_per_order,unit_purchase_cost,service_target,random_seed,notes
+S01,SYNTHETIC_ASSUMPTION_ONLY,7,deterministic_7d,7,0,7,7,0.05,2.0,1.0,1.0,0.95,20261020,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S02,SYNTHETIC_ASSUMPTION_ONLY,7,deterministic_7d,7,0,7,7,0.15,5.0,1.0,1.0,0.95,20261021,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S03,SYNTHETIC_ASSUMPTION_ONLY,7,deterministic_7d,7,0,7,7,0.3,10.0,1.0,1.0,0.95,20261022,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S04,SYNTHETIC_ASSUMPTION_ONLY,7,low_variance_normal,7,1,5,9,0.05,2.0,1.0,1.0,0.95,20261023,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S05,SYNTHETIC_ASSUMPTION_ONLY,7,low_variance_normal,7,1,5,9,0.15,5.0,1.0,1.0,0.95,20261024,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S06,SYNTHETIC_ASSUMPTION_ONLY,7,low_variance_normal,7,1,5,9,0.3,10.0,1.0,1.0,0.95,20261025,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S07,SYNTHETIC_ASSUMPTION_ONLY,7,high_variance_normal,7,3,1,14,0.05,2.0,1.0,1.0,0.95,20261026,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S08,SYNTHETIC_ASSUMPTION_ONLY,7,high_variance_normal,7,3,1,14,0.15,5.0,1.0,1.0,0.95,20261027,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S09,SYNTHETIC_ASSUMPTION_ONLY,7,high_variance_normal,7,3,1,14,0.3,10.0,1.0,1.0,0.95,20261028,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S10,SYNTHETIC_ASSUMPTION_ONLY,7,right_skewed_discrete,7,4,2,21,0.05,2.0,1.0,1.0,0.95,20261029,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S11,SYNTHETIC_ASSUMPTION_ONLY,7,right_skewed_discrete,7,4,2,21,0.15,5.0,1.0,1.0,0.95,20261030,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.
+S12,SYNTHETIC_ASSUMPTION_ONLY,7,right_skewed_discrete,7,4,2,21,0.3,10.0,1.0,1.0,0.95,20261031,Synthetic scenario; not observed from UCI or M5 and must be frozen before final simulation.

@@ -1,0 +1,9 @@
+{
+  "selected_alpha": 1.5,
+  "frontier_rows": 960,
+  "placebo_rows": 372,
+  "inventory_matched_rows": 186,
+  "break_even_rows": 546,
+  "sensitivity_rows": 440,
+  "notes": "Primary policies use cost-based critical fractile p/(p+h); all inventory, lead-time, cost, and stockout outcomes remain simulated."
+}

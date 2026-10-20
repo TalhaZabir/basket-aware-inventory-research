@@ -1,0 +1,53 @@
+{
+  "phase": 2,
+  "parent_validation_hash": "677bfb9345b95983bf1fb63fee0e4dd8da3ac63b372530d6c76587aaf5482e44",
+  "primary_estimand": "service_at_matched_inventory",
+  "forecast": "empirical_quantile",
+  "safety_multiplier": 6.0,
+  "alpha": 3.0,
+  "tau": 0.5,
+  "alpha_grid_frozen_before_test": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0
+  ],
+  "matching_target_grid": [
+    0.8,
+    0.85,
+    0.9,
+    0.95,
+    0.975,
+    0.99,
+    0.995,
+    0.999,
+    0.9999,
+    0.99999,
+    0.999999,
+    0.9999999
+  ],
+  "min_pair_count": 5,
+  "top_k": 5,
+  "seed": 20261020,
+  "stochastic_replications": 30,
+  "deterministic_replications": 1,
+  "test_window_used": true,
+  "outputs": [
+    "phase2_test_results.csv",
+    "phase2_test_summary.csv",
+    "phase2_test_matched.csv",
+    "phase2_test_matched_summary.csv"
+  ],
+  "graph_metadata": {
+    "default_edges": 1449316,
+    "rewired_edges": 1449316,
+    "shuffled_edges": 1437590,
+    "stale_edges": 1161391,
+    "pa1_buffer_total": 254598.98862149904,
+    "pa3_tau_quantile": 0.5,
+    "pa3_threshold": 80.5145375880363,
+    "all_buffer_totals_equal": true
+  },
+  "config_hash": "ce09b3fdfbae9f723fd8cf6f697ac7f6202a5740f6a4be92998c6abd158c88be"
+}

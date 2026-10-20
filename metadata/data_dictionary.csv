@@ -1,0 +1,34 @@
+file,field,type_or_unit,definition,status,source
+uci_transaction_lines_clean.csv,source_row_id,integer,source row identifier after concatenating UCI sheets,observed,UCI
+uci_transaction_lines_clean.csv,invoice_id,string,invoice or transaction identifier used to define a completed basket,observed,UCI
+uci_transaction_lines_clean.csv,invoice_date,datetime,transaction timestamp,observed,UCI
+uci_transaction_lines_clean.csv,stock_code,string,product or stock code,observed,UCI
+uci_transaction_lines_clean.csv,description,string,product description as supplied by UCI,observed,UCI
+uci_transaction_lines_clean.csv,quantity,integer,positive units on the retained sale line,observed,UCI
+uci_transaction_lines_clean.csv,unit_price_gbp,decimal GBP,unit price in the source transaction,observed,UCI
+uci_transaction_lines_clean.csv,line_value_gbp,decimal GBP,quantity multiplied by unit price,derived from observed,UCI
+uci_baskets.csv,invoice_id,string,basket key; one row per retained invoice,observed,UCI
+uci_baskets.csv,line_count,integer,retained transaction-line count,derived from observed,UCI
+uci_baskets.csv,distinct_product_count,integer,number of distinct retained products in the basket,derived from observed,UCI
+uci_baskets.csv,total_units,integer,sum of positive quantities in the basket,derived from observed,UCI
+uci_baskets.csv,basket_value_gbp,decimal GBP,sum of retained line values,derived from observed,UCI
+uci_weekly_product_demand.csv,week_start,date,Monday-start week containing the transaction date,derived from observed,UCI
+uci_weekly_product_demand.csv,stock_code,string,product identifier,observed,UCI
+uci_weekly_product_demand.csv,units_sold,integer,weekly positive units; zero for a product-week with no retained sales,derived from observed,UCI
+uci_weekly_product_demand.csv,transaction_count,integer,number of retained invoices containing the product,derived from observed,UCI
+uci_weekly_product_demand.csv,revenue_gbp,decimal GBP,weekly retained transaction value,derived from observed,UCI
+uci_copurchase_edges_train_only.csv,stock_code_a,string,first product in the unordered training-period pair,observed/derived,UCI
+uci_copurchase_edges_train_only.csv,stock_code_b,string,second product in the unordered training-period pair,observed/derived,UCI
+uci_copurchase_edges_train_only.csv,co_purchase_count,integer,number of training baskets containing both products,derived from observed,UCI
+uci_copurchase_edges_train_only.csv,jaccard,ratio,pair basket count divided by union basket count,derived from observed,UCI
+uci_copurchase_edges_train_only.csv,lift,ratio,pair probability divided by product marginal probabilities,derived from observed,UCI
+m5_weekly_product_demand_sample.csv,id,string,M5 item-store series identifier,observed,M5
+m5_weekly_product_demand_sample.csv,item_id,string,M5 product identifier,observed,M5
+m5_weekly_product_demand_sample.csv,store_id,string,M5 store identifier,observed,M5
+m5_weekly_product_demand_sample.csv,week_start,date,Monday-start calendar week,derived from observed,M5
+m5_weekly_product_demand_sample.csv,units_sold,integer,weekly sum of M5 daily unit sales for the sample series,derived from observed,M5
+inventory_scenarios.csv,scenario_id,string,scenario identifier,synthetic assumption,Synthetic
+inventory_scenarios.csv,lead_time_distribution,string,synthetic lead-time distribution family,synthetic assumption,Synthetic
+inventory_scenarios.csv,holding_cost_per_unit_week,decimal GBP,assumed weekly holding cost per unit,synthetic assumption,Synthetic
+inventory_scenarios.csv,shortage_penalty_per_unit,decimal GBP,assumed penalty per unmet unit,synthetic assumption,Synthetic
+inventory_scenarios.csv,ordering_cost_per_order,decimal GBP,assumed fixed ordering cost,synthetic assumption,Synthetic

@@ -1,0 +1,37 @@
+{
+  "phase": 3,
+  "primary_scenario": "S05",
+  "parent_validation_config_hash": "ac87a2e332c1c82cff38e93a053770ebe97b744c7af8931e9f3269582ef05866",
+  "selected_alpha": 1.5,
+  "tau": 0.5,
+  "match_tolerance": 0.01,
+  "replications_stochastic": 120,
+  "replications_deterministic": 1,
+  "bootstrap_resamples_per_scenario": 1000,
+  "variants": [
+    "PA1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+  ],
+  "contrasts": [
+    "PA1_minus_C1",
+    "PA1_minus_C4",
+    "PA1_minus_C2",
+    "PA1_minus_C3",
+    "PA1_minus_C5"
+  ],
+  "test_window_used": true,
+  "graph_metadata": {
+    "default_edges": 1449316,
+    "rewired_edges": 1449316,
+    "shuffled_edges": 1437590,
+    "stale_edges": 1161391,
+    "pa1_buffer_total": 254598.98862149904,
+    "pa3_tau_quantile": 0.5,
+    "pa3_threshold": 80.5145375880363,
+    "all_buffer_totals_equal": true
+  },
+  "config_hash": "983c3e4505db8a6efe8fbf2538b2332abad1bb80b35c1c87d0ab8f2741d44097"
+}

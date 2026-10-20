@@ -1,0 +1,37 @@
+{
+  "phase": 1,
+  "seed": 20261020,
+  "window": "validation_only",
+  "train_end": "2011-06-27",
+  "validation_start": "2011-07-04",
+  "validation_end": "2011-08-29",
+  "methods": [
+    "recent4",
+    "recent8",
+    "seasonal52",
+    "croston",
+    "sba",
+    "tsb",
+    "seasonal_ratio",
+    "empirical_quantile"
+  ],
+  "smoothing": 0.1,
+  "seasonal_ratio_clip": [
+    0.25,
+    4.0
+  ],
+  "empirical_history_weeks": 26,
+  "safety_multiplier_candidates": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    4.0,
+    6.0
+  ],
+  "forecast_winner_by_validation_wape": "empirical_quantile",
+  "primary_estimand": "service_at_matched_inventory",
+  "test_window_used": false,
+  "config_hash": "5f8b31cc1ff8384ee8f9f02beb559e82055601c8093c4827d1a7061a12133bd6"
+}

@@ -1,0 +1,22 @@
+{
+  "phase": 1,
+  "primary_estimand": "service_at_matched_inventory",
+  "forecast": "empirical_quantile",
+  "alpha": 1.5,
+  "safety_multiplier": 6.0,
+  "replications_stochastic": 30,
+  "replications_deterministic": 1,
+  "seed": 20261020,
+  "test_window_used": true,
+  "train_end": "2011-06-27",
+  "test_start": "2011-09-05",
+  "test_end": "2011-12-05",
+  "outputs": [
+    "phase1_forecast_test.csv",
+    "phase1_inventory_results_by_replication.csv",
+    "phase1_inventory_summary.csv",
+    "phase1_inventory_matched.csv",
+    "phase1_inventory_matched_summary.csv"
+  ],
+  "config_hash": "442db865a784ca58522d54ac455784a32583f08ffdcf8b4b699f590d4a3f63a1"
+}

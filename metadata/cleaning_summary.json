@@ -1,0 +1,21 @@
+{
+  "uci_cleaning": {
+    "raw_rows": 1067371,
+    "cancellation_or_negative_rows": 22951,
+    "missing_key_or_date_rows": 0,
+    "non_merchandise_candidate_rows": 6093,
+    "non_positive_quantity_or_price_rows": 25700,
+    "retained_rows": 1036877,
+    "retained_invoices": 39516,
+    "retained_products": 4707,
+    "date_min": "2009-12-01T07:45:00",
+    "date_max": "2011-12-09T12:50:00"
+  },
+  "uci_outputs": {
+    "weekly_rows": 498942,
+    "training_invoices": 29265,
+    "eligible_training_products": 3279,
+    "copurchase_edges": 1576291,
+    "train_end": "2011-06-30"
+  }
+}

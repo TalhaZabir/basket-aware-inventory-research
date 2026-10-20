@@ -1,0 +1,42 @@
+{
+  "source": "dunnhumby Complete Journey",
+  "source_url": "https://www.dunnhumby.com/source-files/",
+  "documented_release_url": "https://github.com/bltap-plmarket/dunnhumby-complete-journey/releases/tag/v1.0-data",
+  "license": "DbCL-1.0 as stated by the documented release mirror",
+  "raw_file": "C:\\Users\\pc\\.codex\\.chatgpt-projects\\g-p-6ad5fcfa5da481918fec293c28875fcc\\research_data_package\\data\\raw\\dunnhumby\\csv\\transaction_data.csv",
+  "raw_sha256": "3a685c0729cef664d634486189f774518b84f53cde7cbf701a5963238692b476",
+  "original_rows": 2595732,
+  "original_products": 92339,
+  "nonpositive_quantity_rows_removed": 14466,
+  "retained_rows": 544550,
+  "retained_products": 300,
+  "retained_baskets": 181761,
+  "week_range": [
+    1,
+    102
+  ],
+  "chronological_split": {
+    "train": [
+      1,
+      78
+    ],
+    "validation": [
+      79,
+      90
+    ],
+    "test": [
+      91,
+      102
+    ]
+  },
+  "universe_rule": "top 300 products by training active-week support, then training units",
+  "synthetic_assumptions": {
+    "lead_time_weeks": 1,
+    "holding_cost_per_unit_week": 1.0,
+    "shortage_penalty_per_unit": 9.0,
+    "ordering_cost": 1.0,
+    "unit_purchase_cost": 1.0,
+    "service_target": 0.9,
+    "alpha": 1.5
+  }
+}

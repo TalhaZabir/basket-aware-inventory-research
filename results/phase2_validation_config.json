@@ -1,0 +1,51 @@
+{
+  "phase": 2,
+  "window": "validation_only",
+  "primary_estimand": "service_at_matched_inventory",
+  "forecast": "empirical_quantile",
+  "safety_multiplier": 6.0,
+  "selected_alpha": 3.0,
+  "selected_tau": 0.5,
+  "alpha_grid": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0
+  ],
+  "tau_grid": [
+    0.5,
+    0.75,
+    0.9
+  ],
+  "matching_target_grid": [
+    0.8,
+    0.85,
+    0.9,
+    0.95,
+    0.975,
+    0.99,
+    0.995,
+    0.999,
+    0.9999,
+    0.99999,
+    0.999999,
+    0.9999999
+  ],
+  "matching_method": "grid_then_one_linear_interpolation_replay",
+  "min_pair_count": 5,
+  "top_k": 5,
+  "seed": 20261020,
+  "test_window_used": false,
+  "graph_metadata": {
+    "default_edges": 1449316,
+    "rewired_edges": 1449316,
+    "shuffled_edges": 1437590,
+    "stale_edges": 1161391,
+    "pa1_buffer_total": 255541.4356789596,
+    "pa3_tau_quantile": 0.5,
+    "pa3_threshold": 80.71608303559299,
+    "all_buffer_totals_equal": true
+  },
+  "config_hash": "677bfb9345b95983bf1fb63fee0e4dd8da3ac63b372530d6c76587aaf5482e44"
+}

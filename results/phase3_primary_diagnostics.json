@@ -1,0 +1,10 @@
+{
+  "primary_scenario": "S05",
+  "alpha": 1.5,
+  "matching_tolerance": 0.01,
+  "max_relative_inventory_gap_PA1": 0.0077238485136468,
+  "max_relative_inventory_gap_C4": 0.0079073636435218,
+  "replications": 120,
+  "bootstrap_resamples": 1000,
+  "rolling_windows": 3
+}

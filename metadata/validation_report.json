@@ -1,0 +1,35 @@
+{
+  "required_files_present": true,
+  "required_file_count": 9,
+  "uci_transaction_rows": 1036877,
+  "uci_invalid_transaction_rows": 0,
+  "uci_basket_rows": 39516,
+  "uci_duplicate_basket_ids": 0,
+  "uci_weekly_rows": 498942,
+  "uci_weekly_negative_units": 0,
+  "uci_weekly_zero_sales_rows": 302798,
+  "copurchase_edge_rows": 1576291,
+  "copurchase_self_edges": 0,
+  "copurchase_train_end_values": [
+    "2011-06-30"
+  ],
+  "copurchase_negative_counts": 0,
+  "synthetic_scenario_rows": 12,
+  "synthetic_status_values": [
+    "SYNTHETIC_ASSUMPTION_ONLY"
+  ],
+  "manifest_rows": 6,
+  "manifest_failures": [],
+  "manifest_files_verified": [
+    "data/raw/uci_online_retail_ii.zip",
+    "data/raw/m5/sales_train_validation.csv",
+    "data/raw/m5/sales_train_evaluation.csv",
+    "data/raw/m5/sell_prices.csv",
+    "data/raw/m5/calendar.csv",
+    "data/raw/m5/sample_submission.csv"
+  ],
+  "m5_sample_rows": 54800,
+  "m5_validation_md5": "26a366a25beb57b0a8f4c7b148758f94",
+  "m5_sell_prices_md5": "08c591caa99e55daf3e0ccac913f7c85",
+  "passed": true
+}
