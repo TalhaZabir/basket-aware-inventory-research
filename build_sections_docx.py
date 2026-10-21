@@ -239,10 +239,10 @@ def parse_markdown(doc: Document, text: str) -> None:
                 "Graph signal by popularity stratum",
             ),
             "[[REPLICATION_FIGURE]]": (
-                "dataset_replication.png",
-                "Figure 7. PA1 minus C4 item-fill differences in UCI Online Retail II and the tightened dunnhumby Complete Journey replay; the external replay is a stress check, not a causal validation.",
-                "Replication of the item-fill contrast across basket datasets",
-                "Replication across basket datasets",
+                "external_pipeline_check.png",
+                "Figure 7. PA1 minus C4 item-fill differences in the primary UCI analysis and the tightened dunnhumby pipeline stress check; the external replay is not treated as replication or causal validation.",
+                "External pipeline stress check for the item-fill contrast",
+                "External pipeline stress check",
             ),
         }
         if line in figure_specs:

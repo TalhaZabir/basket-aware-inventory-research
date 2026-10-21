@@ -80,7 +80,7 @@ def replication() -> None:
     means = [uci.item_fill_difference_cluster_mean, dh.mean_difference]
     lows = [uci.item_fill_difference_cluster_ci95_low, dh.ci95_low]
     highs = [uci.item_fill_difference_cluster_ci95_high, dh.ci95_high]
-    im, dr = canvas("Figure 6. Replication across basket datasets")
+    im, dr = canvas("Figure 7. External pipeline stress check")
     axes(dr)
     ymin, ymax = -1.0, 0.1
     def sy(v): return 670 - (v-ymin)/(ymax-ymin)*575
@@ -92,7 +92,7 @@ def replication() -> None:
         dr.text((x,700), label, fill="#222222", font=font(16), anchor="ma")
         dr.text((x,sy(m)-25), f"{m:+.3f}", fill="#222222", font=font(16), anchor="ma")
     dr.text((660,735), "PA1 minus C4 item fill rate", fill="#222222", font=font(17), anchor="ma")
-    im.save(OUT / "dataset_replication.png")
+    im.save(OUT / "external_pipeline_check.png")
 
 
 if __name__ == "__main__":
